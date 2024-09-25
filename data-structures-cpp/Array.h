@@ -2,6 +2,7 @@
 
 #include <initializer_list>
 #include <iostream>
+#include <algorithm>
 
 /*
 TODO:
@@ -15,7 +16,7 @@ visual representation - opengl?
 
 FIX:
 check if sorted in constructor? constructor with sorted var?
-delete edge cases
+delete - edge cases
 
 MODIFY:
 Add with no index = push_back
@@ -367,15 +368,8 @@ void Array<T>::Sort(bool (*compare)(T,T)) { //Bubble
         return a > b;
     }
     if a > b = true > swap(a,b)
-    */
-
-    for (size_t i = 0; i < m_size - 1; i++) {
-        if (compare(m_arrayPointer[i], m_arrayPointer[i + 1])) {
-            T temp = m_arrayPointer[i];
-            m_arrayPointer[i] = m_arrayPointer[i + 1];
-            m_arrayPointer[i + 1] = temp;
-        }
-    }
+    */  
+    std::sort(m_arrayPointer, m_arrayPointer + m_size);
 
     for (size_t j = 0; j < m_size - 1; j++) {
         if (m_arrayPointer[j] <= m_arrayPointer[j + 1]) {
