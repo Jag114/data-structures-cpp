@@ -3,6 +3,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <algorithm>
+#include <cstddef>
 
 /*
 TODO:
@@ -15,7 +16,6 @@ TODO:
 visual representation - opengl?
 
 FIX:
-check if sorted in constructor? constructor with sorted var?
 delete - edge cases
 
 MODIFY:
@@ -31,7 +31,6 @@ private:
     T* m_arrayPointer = nullptr;
     size_t m_size = 0;
     size_t m_capacity = m_size;
-    bool m_sorted = false;
 
     size_t BinarySearch(T target, size_t l, size_t r, size_t m);
 public:
@@ -45,6 +44,10 @@ public:
 
         iterator operator+(int offset) {
             return iterator(pointer+offset);
+        }
+
+        iterator operator+(iterator other) {
+            return iterator(this->pointer + other.pointer);
         }
 
         iterator& operator++() {//pre
@@ -61,6 +64,25 @@ public:
         iterator& operator=(const iterator& other) {
             pointer = other.pointer;
             return *this;
+        }
+        /*
+        _Vb_const_iterator operator-(const difference_type _Off) const noexcept {
+            _Vb_const_iterator _Tmp = *this;
+            _Tmp -= _Off;
+            return _Tmp;
+        }
+        */
+        iterator operator-(const std::ptrdiff_t difference) {
+            return iterator(static_cast<T*>(this->pointer + difference));
+        }
+        /*
+        difference_type operator-(const _Vb_const_iterator& _Right) const noexcept {
+            return static_cast<difference_type>(_Mybase::_VBITS_DIFF * (this->_Myptr - _Right._Myptr))
+                 + static_cast<difference_type>(this->_Myoff) - static_cast<difference_type>(_Right._Myoff);
+        }
+        */
+        std::ptrdiff_t operator-(const iterator& other) {
+            return (std::ptrdiff_t)this->pointer + (other.pointer - this->pointer);
         }
 
         bool operator!=(const iterator& other) {
@@ -97,8 +119,6 @@ public:
 
     size_t GetCapacity();
 
-    bool IsSorted();
-
     void Display();
 
     void Add(size_t index, T value);
@@ -115,8 +135,6 @@ public:
     iterator End();
 
     size_t Find(T target);
-
-    void Sort(bool (*compare)(T, T));
 
     void Reserve(size_t size);
 };
@@ -243,11 +261,6 @@ size_t Array<T>::GetCapacity() {
 }
 
 template <typename T>
-bool Array<T>::IsSorted() {
-    return m_sorted;
-}
-
-template <typename T>
 void Array<T>::Display() {
     for (int i = 0; i < m_size; ++i) {
         std::cout << m_arrayPointer[i] << ' ';
@@ -341,48 +354,15 @@ typename Array<T>::iterator Array<T>::End() {
 template <typename T>
 size_t Array<T>::Find(T target) {
     int result  = m_size;
-    if (m_sorted) {
-        size_t l, r, m;
-        l = 0;
-        r = m_size - 1;
-        m = (m_size - 1) / 2;
-        result = BinarySearch(target, l, r, m);
-    }
-    else {
-        for (size_t i = 0; i < m_size; i++) {
-            if (target == m_arrayPointer[i]) {
-                result = i;
-                break;
-            }
-        }
-    }
-
+    std::sort(this->Begin(), this->End(), [](T a, T b) {return a > b; });
+    size_t l, r, m;
+    l = 0;
+    r = m_size - 1;
+    m = (m_size - 1) / 2;
+    result = BinarySearch(target, l, r, m);
+    
     if (result >= m_size) std::cerr << "Target not found" << std::endl;
     return result;
-}
-
-template <typename T>
-void Array<T>::Sort(bool (*compare)(T,T)) { //Bubble
-    /*
-    compare(int a, int b){
-        return a > b;
-    }
-    if a > b = true > swap(a,b)
-    */  
-    std::sort(m_arrayPointer, m_arrayPointer + m_size);
-
-    for (size_t j = 0; j < m_size - 1; j++) {
-        if (m_arrayPointer[j] <= m_arrayPointer[j + 1]) {
-            m_sorted = true;
-        }
-        else {
-            m_sorted = false;
-        }
-    }
-
-    if (!m_sorted) {
-        Sort(compare);
-    }
 }
 
 template <typename T>

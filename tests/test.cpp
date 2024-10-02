@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Array.h"
+#include <algorithm>
 
 TEST(ArrayTest, Add) {
 	Array<int> arr1 = { 1,3,2,8,7,5 };
@@ -21,9 +22,7 @@ TEST(ArrayTest, Sort) {
 	Array<int> arr1 = { 1,3,2,8,7,5 };
 	Array<int> arr2 = { 1,2,3,5,7,8 };
 	
-	arr1.Sort([](int a,int b) {
-		return a > b;
-	});
+	std::sort(arr1.Begin(), arr1.End(), [] (int a, int b) {return a > b; });
 	
 	for (size_t i = 0; i < arr1.GetLength(); ++i) {
 		EXPECT_EQ(arr1[i], arr2[i]);
