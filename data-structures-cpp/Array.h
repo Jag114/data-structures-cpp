@@ -46,10 +46,6 @@ public:
             return iterator(pointer+offset);
         }
 
-        iterator operator+(iterator other) {
-            return iterator(this->pointer + other.pointer);
-        }
-
         iterator& operator++() {//pre
             pointer++;
             return *this;
@@ -61,10 +57,25 @@ public:
             return temp;
         }
 
+        iterator& operator--() {
+            pointer--;
+            return *this;
+        }
+
+        iterator operator--(int) {
+            iterator temp = *this;
+            pointer--;
+            return temp;
+        }
+
         iterator& operator=(const iterator& other) {
             pointer = other.pointer;
             return *this;
         }
+        /*
+            it - it = wartosc
+            it - wartosc = it
+        */
         /*
         _Vb_const_iterator operator-(const difference_type _Off) const noexcept {
             _Vb_const_iterator _Tmp = *this;
@@ -72,8 +83,8 @@ public:
             return _Tmp;
         }
         */
-        iterator operator-(const std::ptrdiff_t difference) {
-            return iterator(static_cast<T*>(this->pointer + difference));
+        iterator operator-(std::ptrdiff_t offset) const {
+            return iterator(pointer - offset);
         }
         /*
         difference_type operator-(const _Vb_const_iterator& _Right) const noexcept {
@@ -81,8 +92,8 @@ public:
                  + static_cast<difference_type>(this->_Myoff) - static_cast<difference_type>(_Right._Myoff);
         }
         */
-        std::ptrdiff_t operator-(const iterator& other) {
-            return (std::ptrdiff_t)this->pointer + (other.pointer - this->pointer);
+        std::ptrdiff_t operator-(const iterator& other) const {
+            return pointer - other.pointer;
         }
 
         bool operator!=(const iterator& other) {
@@ -93,7 +104,23 @@ public:
             return other.pointer == pointer;
         }
 
-        T operator*() {
+        bool operator<(const iterator& other) {
+            return other.pointer < pointer;
+        }
+
+        bool operator>(const iterator& other) {
+            return other.pointer > pointer;
+        }
+
+        bool operator<=(const iterator& other) {
+            return other.pointer <= pointer;
+        }
+
+        bool operator>=(const iterator& other) {
+            return other.pointer >= pointer;
+        }
+
+        T& operator*() {
             return *pointer;
         }
 

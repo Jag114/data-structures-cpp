@@ -11,15 +11,16 @@
 #include <string>
 #include <chrono>
 
+#include <typeinfo>
+
 int main()
 {
 	std::vector<int> v = { 1,2,3 };
 	std::vector<int>::iterator;
 	Array<int> arr1 = { 1,2,3 };
-	std::cout << "end - begin + 2 " << *(arr1.Begin() + (arr1.End() - 2)) << std::endl;
-	std::cout << "* end - 2 " << *(arr1.End() - 2) << std::endl;
-	std::cout << "* Begin " << *(arr1.Begin()) << std::endl;
-	std::sort(v.begin(), v.end(), [](int a, int b) {return a > b; });
+	std::cout << typeid(v.end() - (v.begin() + 1)).name() << std::endl;
+	std::cout << v.end() - (v.begin() + 1) << std::endl;
+	
 	/*
 	Array<int> arr1 = { 1,2,3,7,3,5 };
 	Array<int> arr2 = { 10,11,12 };
