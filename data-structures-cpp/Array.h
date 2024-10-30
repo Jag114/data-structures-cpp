@@ -21,7 +21,6 @@ delete - edge cases
 MODIFY:
 Add with no index = push_back
 Add with negative index = backwards
-add consts and references
 growing capacity when adding new elements
 */
 
@@ -32,44 +31,49 @@ private:
     size_t m_size = 0;
     size_t m_capacity = m_size;
 
-    size_t BinarySearch(T target, size_t l, size_t r, size_t m);
 public:
-    class iterator {
-    private:
-        T* pointer = nullptr;
+    class iterator : public std::iterator<std::random_access_iterator_tag, T> {
     public:
-        iterator(T* ptr) {
-            pointer = ptr;
-        }
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = T*;
+        using reference = T&;
+
+    private:
+        pointer m_pointer = nullptr;
+
+    public:
+        iterator(pointer ptr) : m_pointer(ptr) {}
 
         iterator operator+(int offset) {
-            return iterator(pointer+offset);
+            return iterator(m_pointer+offset);
         }
 
         iterator& operator++() {//pre
-            pointer++;
+            m_pointer++;
             return *this;
         }
 
         iterator operator++(int) {//post
             iterator temp = *this;
-            pointer++;
+            m_pointer++;
             return temp;
         }
 
         iterator& operator--() {
-            pointer--;
+            m_pointer--;
             return *this;
         }
 
         iterator operator--(int) {
             iterator temp = *this;
-            pointer--;
+            m_pointer--;
             return temp;
         }
 
         iterator& operator=(const iterator& other) {
-            pointer = other.pointer;
+            m_pointer = other.m_pointer;
             return *this;
         }
         /*
@@ -84,7 +88,7 @@ public:
         }
         */
         iterator operator-(std::ptrdiff_t offset) const {
-            return iterator(pointer - offset);
+            return iterator(m_pointer - offset);
         }
         /*
         difference_type operator-(const _Vb_const_iterator& _Right) const noexcept {
@@ -93,35 +97,39 @@ public:
         }
         */
         std::ptrdiff_t operator-(const iterator& other) const {
-            return pointer - other.pointer;
+            return m_pointer - other.m_pointer;
         }
 
-        bool operator!=(const iterator& other) {
-            return other.pointer != pointer;
+        bool operator!=(const iterator& other) const {
+            return other.m_pointer != m_pointer;
         }
 
-        bool operator==(const iterator& other) {
-            return other.pointer == pointer;
+        bool operator==(const iterator& other) const {
+            return other.m_pointer == m_pointer;
         }
 
-        bool operator<(const iterator& other) {
-            return other.pointer < pointer;
+        bool operator<(const iterator& other) const {
+            return other.m_pointer < m_pointer;
         }
 
-        bool operator>(const iterator& other) {
-            return other.pointer > pointer;
+        bool operator>(const iterator& other) const {
+            return other.m_pointer > m_pointer;
         }
 
-        bool operator<=(const iterator& other) {
-            return other.pointer <= pointer;
+        bool operator<=(const iterator& other) const {
+            return other.m_pointer <= m_pointer;
         }
 
-        bool operator>=(const iterator& other) {
-            return other.pointer >= pointer;
+        bool operator>=(const iterator& other) const {
+            return other.m_pointer >= m_pointer;
         }
 
-        T& operator*() {
-            return *pointer;
+        reference operator*() const {
+            return *m_pointer;
+        }
+
+        pointer operator->() const { 
+            return m_pointer;
         }
 
     };
@@ -150,6 +158,7 @@ public:
 
     void Add(size_t index, T value);
     void Add(T value); //back
+    void Add(size_t index, Array<T> array);
 
     bool Delete(size_t index, size_t amount);
 
@@ -165,27 +174,6 @@ public:
 
     void Reserve(size_t size);
 };
-
-template <typename T>
-size_t Array<T>::BinarySearch(T target, size_t l, size_t r, size_t m) {
-    if (l == m || r == m) {
-        return m_size;
-    }
-    
-    if (target > m_arrayPointer[m]) {
-        l = m;
-        m = (l + r) / 2;
-        BinarySearch(target, l, r, m);
-    }
-    else if (target < m_arrayPointer[m]) {
-        r = m;
-        m = (l + r) / 2;
-        BinarySearch(target, l, r, m);
-    }
-    else {
-        return m;
-    }
-}
 
 template <typename T>
 Array<T>::Array() = default;
@@ -322,12 +310,34 @@ void Array<T>::Add(T value) {
     if (m_capacity < m_size) {
         T* newArr = new T[m_size];
 
-        newArr[m_size - 1] = value;
+        //newArr[m_size - 1] = value;
 
         delete[] m_arrayPointer;
         m_arrayPointer = newArr;
         m_capacity++;
     }
+    m_arrayPointer[m_size - 1] = value;
+}
+
+template <typename T>
+void Array<T>::Add(size_t index, Array<T> array) {
+    m_size += array.m_size;
+
+    T* newArr = new T[m_size];
+
+    for (size_t i = 0; i < index; ++i) {
+        newArr[i] = m_arrayPointer[i];
+    }
+
+    for (size_t j = index, i = 0; j < array.m_size + index; ++j, ++i) {
+        newArr[j] = array[i];
+    }
+
+    for (size_t i = array.m_size + index; i < m_size; i++) {
+        newArr[i] = m_arrayPointer[i];
+    }
+
+ 
 }
 
 template <typename T>
@@ -381,6 +391,7 @@ typename Array<T>::iterator Array<T>::End() {
 template <typename T>
 size_t Array<T>::Find(T target) {
     int result  = m_size;
+    //TODO change sort
     std::sort(this->Begin(), this->End(), [](T a, T b) {return a > b; });
     size_t l, r, m;
     l = 0;

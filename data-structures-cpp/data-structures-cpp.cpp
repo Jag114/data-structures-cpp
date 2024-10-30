@@ -18,8 +18,6 @@ int main()
 	std::vector<int> v = { 1,2,3 };
 	std::vector<int>::iterator;
 	Array<int> arr1 = { 1,2,3 };
-	std::cout << typeid(v.end() - (v.begin() + 1)).name() << std::endl;
-	std::cout << v.end() - (v.begin() + 1) << std::endl;
 	
 	/*
 	Array<int> arr1 = { 1,2,3,7,3,5 };
