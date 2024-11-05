@@ -7,20 +7,19 @@
 
 /*
 TODO:
+.set - set all elements to 0 (default), or given value if given
+visual representation - opengl?
+
+FIX:
+.delete - edge cases
 .insert - add array into array
     Array<int> arr1 = {1,2,5}
     Array<int> arr2 = {3,4}
     arr1.insert(start index, array, nubmer of elems)
     arr1 = {1,2,3,4,5}
-.set - set to 0 default, or set value if given
-visual representation - opengl?
-
-FIX:
-delete - edge cases
 
 MODIFY:
 Add with no index = push_back
-Add with negative index = backwards
 growing capacity when adding new elements
 */
 
@@ -96,7 +95,7 @@ public:
                  + static_cast<difference_type>(this->_Myoff) - static_cast<difference_type>(_Right._Myoff);
         }
         */
-        std::ptrdiff_t operator-(const iterator& other) const {
+        difference_type operator-(const iterator& other) const {
             return m_pointer - other.m_pointer;
         }
 
@@ -319,7 +318,7 @@ void Array<T>::Add(T value) {
     m_arrayPointer[m_size - 1] = value;
 }
 
-template <typename T>
+template <typename T>//FIX
 void Array<T>::Add(size_t index, Array<T> array) {
     m_size += array.m_size;
 
@@ -336,8 +335,6 @@ void Array<T>::Add(size_t index, Array<T> array) {
     for (size_t i = array.m_size + index; i < m_size; i++) {
         newArr[i] = m_arrayPointer[i];
     }
-
- 
 }
 
 template <typename T>

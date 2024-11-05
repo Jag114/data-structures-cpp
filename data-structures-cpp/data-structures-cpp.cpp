@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <list>
 
 #include <typeinfo>
 
@@ -18,6 +19,12 @@ int main()
 	std::vector<int> v = { 1,2,3 };
 	std::vector<int>::iterator;
 	Array<int> arr1 = { 1,2,3 };
+	std::list<int> l = { 1,2,3 };
+	l.push_back(4);
+	std::list<int>::iterator;
+	List<int> list1 = { 1,2,3 };
+	list1.Display();
+
 	
 	/*
 	Array<int> arr1 = { 1,2,3,7,3,5 };
