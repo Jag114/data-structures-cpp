@@ -3,7 +3,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <algorithm>
-#include <cstddef>
+//#include <cstddef> ?
 
 /*
 TODO:
@@ -12,11 +12,6 @@ visual representation - opengl?
 
 FIX:
 .delete - edge cases
-.insert - add array into array
-    Array<int> arr1 = {1,2,5}
-    Array<int> arr2 = {3,4}
-    arr1.insert(start index, array, nubmer of elems)
-    arr1 = {1,2,3,4,5}
 
 MODIFY:
 Add with no index = push_back
@@ -318,23 +313,31 @@ void Array<T>::Add(T value) {
     m_arrayPointer[m_size - 1] = value;
 }
 
-template <typename T>//FIX
+template <typename T>
 void Array<T>::Add(size_t index, Array<T> array) {
     m_size += array.m_size;
-
+    while (m_capacity < m_size) {
+        m_capacity *= 1.5;
+    }
     T* newArr = new T[m_size];
 
-    for (size_t i = 0; i < index; ++i) {
+    std::memcpy(newArr, m_arrayPointer, sizeof(T) * index);
+    /*for (size_t i = 0; i < index; ++i) {
         newArr[i] = m_arrayPointer[i];
-    }
+    }*/
+    
+    std::memcpy(newArr + index, array.m_arrayPointer, sizeof(T) * array.m_size);
+    /*for (size_t j = index, i = 0; j < array.m_size + index; ++j, ++i) {
+        newArr[j] = array.m_arrayPointer[i];
+    }*/
 
-    for (size_t j = index, i = 0; j < array.m_size + index; ++j, ++i) {
-        newArr[j] = array[i];
-    }
-
-    for (size_t i = array.m_size + index; i < m_size; i++) {
-        newArr[i] = m_arrayPointer[i];
-    }
+    std::memcpy(newArr + index + array.m_size, m_arrayPointer + index, sizeof(T) * (m_size - index));
+    /*for (size_t j = array.m_size + index, i = index; j < m_size; ++j, ++i) {
+        newArr[j] = m_arrayPointer[i];
+    }*/
+    
+    delete[] m_arrayPointer;
+    m_arrayPointer = newArr;
 }
 
 template <typename T>

@@ -1,6 +1,9 @@
 #include "pch.h"
-#include "Array.h"
 #include <algorithm>
+
+#include "List.h"
+#include "Array.h"
+
 
 TEST(ArrayTest, Add) {
 	Array<int> arr1 = { 1,3,2,8,7,5 };
@@ -41,4 +44,7 @@ TEST(ArrayTest, Sort) {
 	}
 }
 
-//TEST(ArrayTest, )
+TEST(ListTest, first) {
+	List<int> l1{ 2 };
+	l1.Display();
+}
